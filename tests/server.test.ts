@@ -1,0 +1,16 @@
+import {test,after,before} from 'node:test';
+import assert from 'node:assert/strict';
+import type {AddressInfo} from 'node:net';
+import {makeServer} from '../src/server.js';
+const server=makeServer('https://flagexit.example');let base='';
+before(async()=>{await new Promise<void>(resolve=>server.listen(0,'127.0.0.1',resolve));base='http://127.0.0.1:'+(server.address() as AddressInfo).port;});
+after(async()=>{server.closeAllConnections();await new Promise<void>(resolve=>server.close(()=>resolve()));});
+test('health labels missing sponsor evidence and source',async()=>{const res=await fetch(base+'/api/health');assert.equal(res.status,200);assert.equal((await res.json()).integration.gitlabDuo,'not_verified');});
+test('interface delivers CSP and explicit runtime boundary',async()=>{const res=await fetch(base);assert.ok(res.headers.get('content-security-policy')?.includes("frame-ancestors 'none'"));assert.ok((await res.text()).includes('GITLAB EXECUTION PENDING'));});
+test('actual HTTP fixture verification and wrong-value control',async()=>{const res=await fetch(base+'/api/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:'express-true'})});const data=await res.json();assert.equal(data.verification.status,'passed');assert.equal(data.verification.wrongValueCaught,true);});
+test('foreign origin rejected',async()=>{const res=await fetch(base+'/api/verify',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://evil.example'},body:'{}'});assert.equal(res.status,403);});
+test('non-JSON rejected',async()=>{const res=await fetch(base+'/api/analyze',{method:'POST',body:'{}'});assert.equal(res.status,415);});
+test('arbitrary runtime input is not accepted',async()=>{const res=await fetch(base+'/api/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:'custom',source:'process.exit()'})});assert.equal(res.status,400);});
+test('oversized source inventory rejected at HTTP boundary',async()=>{const res=await fetch(base+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({padding:'x'.repeat(400001)})});assert.equal(res.status,413);});
+test('malformed JSON does not expose internals',async()=>{const res=await fetch(base+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:'{'});assert.equal(res.status,400);assert.ok(!(await res.text()).includes('SyntaxError'));});
+test('paths cannot read local files',async()=>{const res=await fetch(base+'/.env');assert.equal(res.status,404);});

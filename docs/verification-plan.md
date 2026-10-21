@@ -1,6 +1,6 @@
 # FlagExit: verification plan
 
-No tests or evaluations have run. The following are prospective acceptance targets, not results.
+Current results: 30 automated tests and ten browser workflow checks passed. Three supported original fixture scenarios cover ten finite cases; all matched the retained baseline, and each supported scenario caught an opposite-final-value control. Three unsupported scenarios refused. See LOCAL_MILESTONE.md for exact evidence and limits. The original held-out and provider targets below remain unmeasured.
 
 ## Fixtures and acceptance
 

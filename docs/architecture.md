@@ -1,6 +1,6 @@
 # FlagExit: architecture
 
-Proposed design; no components have been implemented.
+Current local implementation: `src/core.ts` performs bounded AST analysis, `src/fixtures.ts` compares ten original finite behavior cases, and `src/server.ts` serves a stateless HTTP API and vanilla browser review UI. Only fixed repository-owned fixtures can execute; submitted JSON is analyzed without execution. Optional browser storage replaces server persistence. The provider workflow below remains the release target, not completed integration evidence.
 
 An issue in a new fixture application names a flag → actual GitLab Duo flow inspects declared configuration and references → selects permitted transformation → opens an MR → pipeline runs before/after behavior checks → preview deployment executes smoke tests → reviewer receives evidence and approves merge. Supervised autonomy is the default; no silent production merge or arbitrary shell command from issue text.
 

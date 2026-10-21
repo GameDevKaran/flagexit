@@ -1,0 +1,11 @@
+# Local workbench milestone — 21 October 2026
+
+Implemented a TypeScript AST proposal engine, six original scenarios, a CLI, stateless Node HTTP API and responsive browser review interface. Source-bound completed-rollout records are checked for consistency, but their real-world truth is not verified. The engine supports one declared pure boolean flag API in if/ternary conditions, conservatively refusing dynamic/aliased/shadowed uses, unsupported imports, unsafe hoisting, effectful conditions, stale or incomplete evidence. A refusal returns no partial candidate.
+
+Owned fixtures exercise final true, final false and an interacting retained flag across ten finite cases. Actual before/candidate execution matches each retained baseline, and an opposite-value control changes an output in every supported scenario. These are development fixtures, not held-out benchmarks or arbitrary-program equivalence. Submitted code is never executed. Input paths are identifiers only, not filesystem paths.
+
+Thirty automated tests passed (21 core/fixture and nine HTTP), followed by ten actual browser workflow checks: inspect/compare/control, export, save/reload, false final value, interacting flag, refusal, JSON upload with static-only result, delete, 390px layout and independent storage. Browser console errors: zero. Screenshots/raw video and the report are ignored under `.local/browser/`. Desktop screenshot visually reviewed. npm audit reported zero known vulnerabilities at install time.
+
+The API permits bounded JSON requests and fixed assets, rejects foreign browser origins, sets restrictive browser headers, has request timeouts, and retains no source/report data server-side. Optional browser storage/export can contain code; the user chooses save/delete. No cookies, login, arbitrary URL fetch, provider tokens or third-party assets are used by this workbench.
+
+Not complete: actual Duo run, MR workflow, provider-verified CI, public cloud deployment, live sponsor evidence and final media. `.gitlab-ci.yml` runs only when manually started, avoiding automatic usage before sponsor coverage is confirmed. The repository skill is prepared but has never been executed by Duo. Local evidence must not be represented as a successful hackathon integration.

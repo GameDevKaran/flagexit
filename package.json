@@ -1,0 +1,25 @@
+{
+  "name": "flagexit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Bounded flag retirement with source-bound rollout evidence and finite behavior checks",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test dist/tests/*.test.js",
+    "demo": "npm run build && node dist/src/cli.js demo",
+    "start": "node dist/src/server.js",
+    "test:browser": "node scripts/verify-browser.mjs"
+  },
+  "dependencies": {
+    "typescript": "5.9.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/node": "24.10.0"
+  }
+}

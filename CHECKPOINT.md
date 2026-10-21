@@ -1,0 +1,9 @@
+# FlagExit recoverable milestone — 21 October 2026
+
+Local core, CLI, HTTP API and browser workbench implemented. Thirty automated tests and ten browser checks passed; npm audit zero known vulnerabilities. Preserve `.local/browser/` screenshots/raw footage/evidence. See docs/LOCAL_MILESTONE.md for limits. No genuine Duo/MR/CI execution or public deployment has occurred.
+
+Resume with the existing private GitLab project ID87890110 and `gitlab` remote. Git/API credential and sponsor-covered usage confirmation are owner-pending. Source stays private until explicit publication authorization. GCP only tough-melody-508008-p8, with a separate FlagExit spending approval required (Amazon USD25 does not cover it). The working source is ready for its bounded container/release check; do not repeat passed suites without a change or unresolved concern.
+
+The local Linux container passed four checks under 512 MiB/1 CPU with non-root/read-only execution: HTTP health, actual transform/four interacting-flag runtime cases, foreign-origin rejection and isolation settings. Image ID `sha256:6d302c2deec78791e56e7466015aa04c1acecbd0414ff12da6d5dc99f8c2e84f`; it is a development image with sourceCommit null, not a release-commit claim. No cloud resource was created. The private planning workspace has the concrete USD5 proposal `configuration/FLAGEXIT_GCP_RELEASE_PROPOSAL.md`; approval is pending.
+
+Next: finish the genuine Duo/MR/CI workflow and public release, attach provider evidence, and replace provisional local-only submission copy with verified URLs. Remain within the first eight; no later15 work. Owner handles all Devpost navigation/media/submission.
