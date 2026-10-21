@@ -14,9 +14,29 @@ verify_retirement:
     - mkdir -p artifacts
     - node --test --test-reporter=junit --test-reporter-destination=artifacts/tests.xml dist/tests/*.test.js
     - node scripts/generate-evidence.mjs
+    - node dist/src/cli.js review verify > artifacts/source-review.json
+    - node dist/src/cli.js review control > artifacts/wrong-value-control.json
   artifacts:
     when: always
     expire_in: 30 days
     paths: [artifacts/]
     reports:
       junit: artifacts/tests.xml
+
+# Run manually on the candidate review branch. The baseline intentionally fails
+# this job: a green generic test suite is not a completed retirement.
+verify_review_branch:
+  image: node:24-bookworm-slim
+  stage: verify
+  when: manual
+  allow_failure: false
+  timeout: 5m
+  script:
+    - npm ci
+    - npm run build
+    - mkdir -p artifacts
+    - node dist/src/cli.js review verify --require-retired > artifacts/retirement-gate.json
+  artifacts:
+    when: always
+    expire_in: 30 days
+    paths: [artifacts/retirement-gate.json]

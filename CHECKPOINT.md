@@ -1,5 +1,7 @@
 # FlagExit recoverable milestone — 21 October 2026
 
+22 October addition: actual source review workflow implemented in examples/express-checkout and src/review.ts. Five new focused tests plus the 21 existing core tests passed; unchanged HTTP/browser/container evidence is preserved. `review apply` atomically creates the deterministic one-file retirement; `review verify --require-retired` rejects the untouched baseline and wrong-value candidate. Independent baseline/source-bound rollout cannot be silently rewritten. The manual candidate-branch gate is prepared, not provider-executed. Genuine Duo/MR/CI, cloud allowance/deployment and publication remain pending.
+
 Local core, CLI, HTTP API and browser workbench implemented. Thirty automated tests and ten browser checks passed; npm audit zero known vulnerabilities. Preserve `.local/browser/` screenshots/raw footage/evidence. See docs/LOCAL_MILESTONE.md for limits. No genuine Duo/MR/CI execution or public deployment has occurred.
 
 Resume with the existing private GitLab project ID87890110 and `gitlab` remote. Git/API credential and sponsor-covered usage confirmation are owner-pending. Source stays private until explicit publication authorization. GCP only tough-melody-508008-p8, with a separate FlagExit spending approval required (Amazon USD25 does not cover it). The working source is ready for its bounded container/release check; do not repeat passed suites without a change or unresolved concern.

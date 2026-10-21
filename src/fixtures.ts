@@ -63,3 +63,24 @@ export function verifyOwnedScenario(id:string) {
   });
   return {scenario,retirement,verification:{status:cases.every(item=>item.passed)?'passed':'failed',cases,wrongValueCaught:cases.some(item=>item.wrongValueDiffers),caseCount:cases.length,limitations}};
 }
+
+// The review CLI executes only these exact, repository-owned variants. This is
+// deliberately not an evaluator for uploaded source or arbitrary MR patches.
+export function verifyOwnedCandidate(id:string, candidate:string) {
+  const item=catalog.find(item=>item.id===id);
+  if(!item||!item.cases.length)throw Error('Unknown executable owned scenario');
+  const scenario=getOwnedScenario(id), expected=analyzeRetirement(scenario.input);
+  const wrongInput=structuredClone(scenario.input);
+  wrongInput.finalValue=!wrongInput.finalValue;
+  wrongInput.evidence=wrongInput.evidence.map(record=>({...record,finalValue:wrongInput.finalValue}));
+  const wrong=analyzeRetirement(wrongInput);
+  if(expected.status!=='accepted'||wrong.status!=='accepted')throw Error('Owned fixture cannot produce review candidates');
+  const variant=candidate===item.source?'baseline':candidate===expected.changes[0]!.after?'retired':candidate===wrong.changes[0]!.after?'opposite_value_control':'unknown';
+  if(variant==='unknown')return {status:'refused' as const,variant,cases:[],reason:'Candidate is not one of the exact owned variants; no source was executed.'};
+  const cases=item.cases.map((input,index)=>{
+    const flags={express:item.finalValue,loyalty:item.finalValue,gift:'gift' in input?input.gift:false};
+    const baseline=executeOwned(item.source,input,flags), result=executeOwned(candidate,input,flags);
+    return {id:`${id}-${index+1}`,input,baseline,candidate:result,passed:JSON.stringify(baseline)===JSON.stringify(result)};
+  });
+  return {status:cases.every(result=>result.passed)?'passed' as const:'failed' as const,variant,cases,reason:null};
+}

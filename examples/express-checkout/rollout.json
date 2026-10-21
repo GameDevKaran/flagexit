@@ -1,0 +1,11 @@
+[
+  {
+    "flag": "express",
+    "finalValue": true,
+    "rollout": "complete",
+    "coveragePercent": 100,
+    "activeOverrides": 0,
+    "reference": "owned synthetic rollout fixture: express-true",
+    "sourceSha256": "f6535d824c06cfcc967bf3b9d5b264eacefcadd5f8fb2c4a9df73a344fa00046"
+  }
+]
