@@ -1,0 +1,7 @@
+# Keep GitLab's default execution image and its Sandbox Runtime.
+# No image override, setup downloads, cloud credential or paid runner is introduced.
+network_policy:
+  include_recommended_allowed: true
+  allow_all_unix_sockets: false
+  allowed_domains:
+    - registry.npmjs.org

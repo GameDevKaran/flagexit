@@ -1,4 +1,6 @@
-# FlagExit recoverable milestone — 21 October 2026
+# FlagExit recoverable milestone — 23 October 2026 IST
+
+The reviewable source-retirement milestone is pushed at594ccb80135ced8bd4812f984a10345f7d630be8: five new review tests plus21 core tests passed, and six CLI checks passed. Existing HTTP/browser/container evidence is preserved. The working candidate was restored to the original baseline for a future authorized Duo/MR branch. Private custom-flow YAML and default-SRT configuration are prepared in `.gitlab/duo/`; structural checks do not prove provider acceptance, default-image compatibility or actual execution. Read docs/DUO_FLOW.md when GitLab access/coverage clears. No public deployment or sponsor execution is claimed.
 
 22 October addition: actual source review workflow implemented in examples/express-checkout and src/review.ts. Five new focused tests plus the 21 existing core tests passed; unchanged HTTP/browser/container evidence is preserved. `review apply` atomically creates the deterministic one-file retirement; `review verify --require-retired` rejects the untouched baseline and wrong-value candidate. Independent baseline/source-bound rollout cannot be silently rewritten. The manual candidate-branch gate is prepared, not provider-executed. Genuine Duo/MR/CI, cloud allowance/deployment and publication remain pending.
 
