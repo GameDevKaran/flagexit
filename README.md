@@ -38,9 +38,13 @@ The browser interface can download an inventory template. Each rollout record mu
 
 A [reviewable checkout example](examples/express-checkout/README.md) now turns the proposal into an actual source-file change. The review CLI retains its original baseline, rejects unknown edits, verifies three finite behavior cases and fails an intentionally wrong-value change. The candidate branch has a dedicated manual CI gate; no GitLab execution is inferred from local checks.
 
-`docker build -t flagexit:local-check .` builds the non-root stateless container. Local container proof is not cloud proof. [GitLab access/next steps](docs/GITLAB_INTEGRATION.md), [checkpoint](CHECKPOINT.md). The prepared manual CI job preserves actual test artifacts; it has not run on GitLab.
+`docker build -t flagexit:local-check .` builds the non-root stateless container. Local container proof is not cloud proof. [GitLab access/next steps](docs/GITLAB_INTEGRATION.md). The prepared manual CI job preserves actual test artifacts; it has not run on GitLab.
 
 Keep credentials in local ignored files or the deployment secret store. Do not commit user data, provider tokens or private evaluation records.
+
+## Development approach
+
+Developed through AI-assisted coding and ChatGPT-assisted research. Verification results and their limits are documented in this repository.
 
 ## License
 

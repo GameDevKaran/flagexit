@@ -34,7 +34,7 @@ export interface RetirementReport {
 }
 
 const API = '@flagexit/flags';
-export const LIMITS = { files: 8, fileBytes: 65_536, totalBytes: 262_144 } as const;
+export const LIMITS = { files: 8, fileBytes: 65_536, totalBytes: 262_144, diagnostics: 100 } as const;
 const LIMITATIONS = [
   'Accepted means a bounded static proposal, not approval to merge or proof of whole-program equivalence.',
   'Only supplied TypeScript files and the declared pure boolean @flagexit/flags API are inspected. External consumers and configuration are outside this analysis.',
@@ -96,6 +96,20 @@ function unifiedDiff(path: string, before: string, after: string): string {
 
 export function analyzeRetirement(input: RetirementInput): RetirementReport {
   const reasons: Refusal[] = [];
+  const reasonKeys = new Set<string>();
+  let diagnosticsTruncated = false;
+  const addReason = (reason: Refusal): void => {
+    if (diagnosticsTruncated) return;
+    const key = JSON.stringify(reason);
+    if (reasonKeys.has(key)) return;
+    if (reasons.length >= LIMITS.diagnostics) {
+      reasons[LIMITS.diagnostics - 1] = { code: 'diagnostic_limit', message: `Additional diagnostics were omitted after the ${LIMITS.diagnostics}-entry limit. Analysis remains refused; no candidate was generated.` };
+      diagnosticsTruncated = true;
+      return;
+    }
+    reasonKeys.add(key);
+    reasons.push(reason);
+  };
   const candidate = input as unknown as Record<string, unknown> | null;
   const files = Array.isArray(candidate?.files) ? candidate.files as SourceFile[] : [];
   const validFiles = files.length > 0 && files.length <= LIMITS.files && files.every(file => file && typeof file.path === 'string' && typeof file.source === 'string');
@@ -107,7 +121,7 @@ export function analyzeRetirement(input: RetirementInput): RetirementReport {
     reasons, changes: [], summary: { filesInspected: 0, flagCalls: 0, replacements: 0 }, limitations: [...LIMITATIONS],
   };
   if (!candidate || !validFiles || !/^[a-z][a-z0-9_-]{0,79}$/.test(report.flag) || typeof candidate.finalValue !== 'boolean') {
-    reasons.push({ code: 'invalid_request', message: 'Supply a flag name, a boolean final value and 1–8 TypeScript source files.' });
+    addReason({ code: 'invalid_request', message: 'Supply a flag name, a boolean final value and 1–8 TypeScript source files.' });
     return report;
   }
   const paths = new Set<string>();
@@ -116,23 +130,23 @@ export function analyzeRetirement(input: RetirementInput): RetirementReport {
     const bytes = Buffer.byteLength(file.source);
     size += bytes;
     if (!/^(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]+\.ts$/.test(file.path) || paths.has(file.path.toLowerCase()) || bytes > LIMITS.fileBytes) {
-      reasons.push({ code: 'invalid_file', message: 'Use unique relative .ts paths without traversal; each file is limited to 64 KiB.', path: file.path });
+      addReason({ code: 'invalid_file', message: 'Use unique relative .ts paths without traversal; each file is limited to 64 KiB.', path: file.path });
     }
     paths.add(file.path.toLowerCase());
   }
-  if (size > LIMITS.totalBytes) reasons.push({ code: 'input_limit', message: 'Combined source exceeds 256 KiB.' });
+  if (size > LIMITS.totalBytes) addReason({ code: 'input_limit', message: 'Combined source exceeds 256 KiB.' });
   if (reasons.length) return report;
   const evidence = candidate.evidence;
   if (!Array.isArray(evidence) || evidence.length === 0 || evidence.length > 16) {
-    reasons.push({ code: 'missing_rollout_evidence', message: 'Supply 1–16 source-bound completed-rollout records.' });
+    addReason({ code: 'missing_rollout_evidence', message: 'Supply 1–16 source-bound completed-rollout records.' });
   } else {
     for (const record of evidence) {
       if (!record || typeof record !== 'object' || record.flag !== report.flag || record.finalValue !== input.finalValue) {
-        reasons.push({ code: 'conflicting_rollout_evidence', message: 'Every rollout record must name this flag and the same final boolean value.' });
+        addReason({ code: 'conflicting_rollout_evidence', message: 'Every rollout record must name this flag and the same final boolean value.' });
       } else if (record.rollout !== 'complete' || record.coveragePercent !== 100 || record.activeOverrides !== 0 || typeof record.reference !== 'string' || !record.reference.trim() || record.reference.length > 500) {
-        reasons.push({ code: 'incomplete_rollout_evidence', message: 'Require completed 100% rollout, zero active overrides and a nonempty evidence reference.' });
+        addReason({ code: 'incomplete_rollout_evidence', message: 'Require completed 100% rollout, zero active overrides and a nonempty evidence reference.' });
       } else if (record.sourceSha256 !== report.sourceSha256) {
-        reasons.push({ code: 'stale_source_evidence', message: 'Rollout evidence does not bind to the exact supplied source inventory.' });
+        addReason({ code: 'stale_source_evidence', message: 'Rollout evidence does not bind to the exact supplied source inventory.' });
       }
     }
   }
@@ -142,7 +156,7 @@ export function analyzeRetirement(input: RetirementInput): RetirementReport {
   for (const source of parsed) {
     report.summary.filesInspected += 1;
     const diagnostics = (source as ts.SourceFile & { parseDiagnostics: readonly ts.Diagnostic[] }).parseDiagnostics;
-    if (diagnostics.length) reasons.push({ code: 'syntax_error', message: ts.flattenDiagnosticMessageText(diagnostics[0]!.messageText, ' '), path: source.fileName });
+    if (diagnostics.length) addReason({ code: 'syntax_error', message: ts.flattenDiagnosticMessageText(diagnostics[0]!.messageText, ' '), path: source.fileName });
     let imports = 0;
     for (const statement of source.statements) {
       if (ts.isImportDeclaration(statement)) {
@@ -151,43 +165,42 @@ export function analyzeRetirement(input: RetirementInput): RetirementReport {
         const valid = ts.isStringLiteral(statement.moduleSpecifier) && statement.moduleSpecifier.text === API
           && !clause?.isTypeOnly && !clause?.name && bindings && ts.isNamedImports(bindings) && bindings.elements.length === 1
           && bindings.elements[0]!.name.text === 'flag' && !bindings.elements[0]!.propertyName && !bindings.elements[0]!.isTypeOnly;
-        if (!valid) reasons.push({ code: 'unsupported_import', message: "Only an unaliased import { flag } from '@flagexit/flags' is supported.", ...sourceAt(source, statement) });
+        if (!valid) addReason({ code: 'unsupported_import', message: "Only an unaliased import { flag } from '@flagexit/flags' is supported.", ...sourceAt(source, statement) });
         else imports += 1;
       }
-      if (ts.isImportEqualsDeclaration(statement) || ts.isExportDeclaration(statement)) reasons.push({ code: 'unknown_api_use', message: 'Import aliases and re-exports are outside the supported inventory.', ...sourceAt(source, statement) });
+      if (ts.isImportEqualsDeclaration(statement) || ts.isExportDeclaration(statement)) addReason({ code: 'unknown_api_use', message: 'Import aliases and re-exports are outside the supported inventory.', ...sourceAt(source, statement) });
     }
-    if (imports > 1) reasons.push({ code: 'ambiguous_binding', message: 'The flag API must have one unambiguous import binding.', path: source.fileName });
+    if (imports > 1) addReason({ code: 'ambiguous_binding', message: 'The flag API must have one unambiguous import binding.', path: source.fileName });
     const walk = (node: ts.Node): void => {
-      if (ts.isVariableDeclarationList(node) && !(node.flags & (ts.NodeFlags.Let | ts.NodeFlags.Const))) reasons.push({ code: 'unsafe_hoisting', message: 'var hoisting is outside this transformation; use block-scoped declarations.', ...sourceAt(source, node) });
-      if (ts.isFunctionDeclaration(node) && !ts.isSourceFile(node.parent)) reasons.push({ code: 'unsafe_hoisting', message: 'Nested function-declaration hoisting is outside this transformation.', ...sourceAt(source, node) });
+      if (ts.isVariableDeclarationList(node) && !(node.flags & (ts.NodeFlags.Let | ts.NodeFlags.Const))) addReason({ code: 'unsafe_hoisting', message: 'var hoisting is outside this transformation; use block-scoped declarations.', ...sourceAt(source, node) });
+      if (ts.isFunctionDeclaration(node) && !ts.isSourceFile(node.parent)) addReason({ code: 'unsafe_hoisting', message: 'Nested function-declaration hoisting is outside this transformation.', ...sourceAt(source, node) });
       if (ts.isIdentifier(node) && node.text === 'flag') {
         const parent = node.parent;
         const isImport = ts.isImportSpecifier(parent) && parent.name === node;
-        if (!isImport && !(isFlagCall(parent) && parent.expression === node)) reasons.push({ code: 'unknown_api_use', message: 'The flag binding cannot be shadowed, aliased, exported or accessed indirectly.', ...sourceAt(source, node) });
+        if (!isImport && !(isFlagCall(parent) && parent.expression === node)) addReason({ code: 'unknown_api_use', message: 'The flag binding cannot be shadowed, aliased, exported or accessed indirectly.', ...sourceAt(source, node) });
       }
       if (isFlagCall(node)) {
         report.summary.flagCalls += 1;
-        if (imports !== 1) reasons.push({ code: 'ambiguous_binding', message: 'A flag call requires exactly one supported API import.', ...sourceAt(source, node) });
-        if (!staticFlagCall(node)) reasons.push({ code: 'dynamic_flag_use', message: 'Every flag call needs one static string literal and no optional/type/extra arguments.', ...sourceAt(source, node) });
+        if (imports !== 1) addReason({ code: 'ambiguous_binding', message: 'A flag call requires exactly one supported API import.', ...sourceAt(source, node) });
+        if (!staticFlagCall(node)) addReason({ code: 'dynamic_flag_use', message: 'Every flag call needs one static string literal and no optional/type/extra arguments.', ...sourceAt(source, node) });
         else {
           const condition = enclosingCondition(node);
-          if (!condition) reasons.push({ code: 'unsupported_context', message: 'Flag reads are supported only in if and ternary boolean conditions.', ...sourceAt(source, node) });
-          else if (!booleanCondition(condition)) reasons.push({ code: 'effectful_condition', message: 'The flag condition includes an unrecognized or potentially effectful expression.', ...sourceAt(source, condition) });
+          if (!condition) addReason({ code: 'unsupported_context', message: 'Flag reads are supported only in if and ternary boolean conditions.', ...sourceAt(source, node) });
+          else if (!booleanCondition(condition)) addReason({ code: 'effectful_condition', message: 'The flag condition includes an unrecognized or potentially effectful expression.', ...sourceAt(source, condition) });
           if ((node.arguments[0] as ts.StringLiteral).text === report.flag) replacements.set(source.fileName, (replacements.get(source.fileName) ?? 0) + 1);
         }
       }
       if ((ts.isCallExpression(node) && (node.expression.kind === ts.SyntaxKind.ImportKeyword || (ts.isIdentifier(node.expression) && ['eval', 'Function', 'require'].includes(node.expression.text))))
         || (ts.isNewExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === 'Function')) {
-        reasons.push({ code: 'dynamic_code', message: 'Dynamic code and module loading prevent a complete static flag inventory.', ...sourceAt(source, node) });
+        addReason({ code: 'dynamic_code', message: 'Dynamic code and module loading prevent a complete static flag inventory.', ...sourceAt(source, node) });
       }
       ts.forEachChild(node, walk);
     };
     walk(source);
   }
-  if (replacements.size === 0) reasons.push({ code: 'flag_not_found', message: 'No supported call names the nominated flag.' });
+  if (replacements.size === 0) addReason({ code: 'flag_not_found', message: 'No supported call names the nominated flag.' });
   // A refusal returns no partial candidate, even if some files were transformable.
   if (reasons.length) {
-    report.reasons = reasons.filter((reason, index, all) => all.findIndex(other => JSON.stringify(other) === JSON.stringify(reason)) === index);
     return report;
   }
   const factory: ts.TransformerFactory<ts.SourceFile> = context => {
