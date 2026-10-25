@@ -4,7 +4,9 @@ Retire a completed boolean flag with a reviewable diff and evidence for the beha
 
 ## Status
 
-The local review workbench is functional: TypeScript AST analysis, source-bound rollout checks, conservative refusals, before/candidate comparisons on owned fixtures, JSON export and optional browser save/reload/delete. Thirty automated tests and ten browser workflow checks pass. Actual GitLab Duo, MR/CI execution and public deployment remain pending; no sponsor integration is claimed by the local demo. See [verified scope](docs/LOCAL_MILESTONE.md).
+**Live app:** https://flagexit-kc4mxxrtbq-uc.a.run.app
+
+The deployed review workbench performs TypeScript AST analysis, source-bound rollout checks, conservative refusals, before/candidate comparisons on owned fixtures, JSON export and optional browser save/reload/delete. Ten public browser workflows and six deployed HTTP/security checks passed on 24 October 2026 IST. Actual GitLab Duo and MR/CI execution remain separate pending integrations. [Live release evidence](docs/LIVE_RELEASE.md), [verified scope](docs/LOCAL_MILESTONE.md).
 
 ## Intended use
 
@@ -38,7 +40,7 @@ The browser interface can download an inventory template. Each rollout record mu
 
 A [reviewable checkout example](examples/express-checkout/README.md) now turns the proposal into an actual source-file change. The review CLI retains its original baseline, rejects unknown edits, verifies three finite behavior cases and fails an intentionally wrong-value change. The candidate branch has a dedicated manual CI gate; no GitLab execution is inferred from local checks.
 
-`docker build -t flagexit:local-check .` builds the non-root stateless container. Local container proof is not cloud proof. [GitLab access/next steps](docs/GITLAB_INTEGRATION.md). The prepared manual CI job preserves actual test artifacts; it has not run on GitLab.
+`docker build -t flagexit:local-check .` builds the non-root stateless container. The public release is documented above. [GitLab access/next steps](docs/GITLAB_INTEGRATION.md). The prepared manual CI job preserves actual test artifacts; it has not run on GitLab.
 
 Keep credentials in local ignored files or the deployment secret store. Do not commit user data, provider tokens or private evaluation records.
 
