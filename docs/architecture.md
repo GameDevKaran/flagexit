@@ -1,15 +1,11 @@
-# FlagExit: architecture
+# FlagExit architecture
 
-Current local implementation: `src/core.ts` performs bounded AST analysis, `src/fixtures.ts` compares ten original finite behavior cases, and `src/server.ts` serves a stateless HTTP API and vanilla browser review UI. Only fixed repository-owned fixtures can execute; submitted JSON is analyzed without execution. Optional browser storage replaces server persistence. The provider workflow below remains the release target, not completed integration evidence.
+The public Cloud Run workbench runs Node 24. `src/core.ts` performs bounded TypeScript AST analysis; `src/fixtures.ts` compares ten original finite behavior cases; `src/server.ts` serves a stateless HTTP API and vanilla browser UI. Only fixed repository-owned fixtures execute. Uploaded inventories receive static analysis, not arbitrary execution. Optional browser storage owns saved reports; no shared server database or GitLab credentials are required by the public workbench.
 
-An issue in a new fixture application names a flag → actual GitLab Duo flow inspects declared configuration and references → selects permitted transformation → opens an MR → pipeline runs before/after behavior checks → preview deployment executes smoke tests → reviewer receives evidence and approves merge. Supervised autonomy is the default; no silent production merge or arbitrary shell command from issue text.
+The separate private GitLab workflow uses the project skill, custom Duo flow and fixed review CLI. The actual flow inspected the owned express=true nomination, generated one permitted checkout transformation and verified it on Node 20.20.2. An operator promoted only the checkout source change to a draft MR. Candidate CI on Node 24 passed the generic verification and blocking required-retirement gate. [Exact provider records](GITLAB_INTEGRATION.md) identify the source, session, MR and successful pipeline. Main retains the original checkout until review and an authorized merge.
 
-Build a small original TypeScript feature-demo service and dashboard, GitLab CI, Duo flow and narrow AST transforms. Support one explicit boolean-flag API, one language and static references. Dynamic flags, cross-service configuration and incomplete usage evidence produce refusal. The dashboard shows the lifecycle with real issue/MR/pipeline identifiers. The public demo is a dedicated fixture environment, not an unrelated repository.
+## Boundaries and failure handling
 
-## Failure handling and data boundaries
+Support is limited to one declared boolean-flag API, static references and pure boolean if/ternary conditions. Unsupported bindings, incomplete source-bound rollout evidence and unsafe transformations refuse without partial output. Evidence consistency does not establish a real production rollout. Owned finite comparisons do not prove arbitrary-program equivalence.
 
-Preserve original inputs and make unavailable evidence explicit. Provider failures must return a visible unresolved state. Decisions that change user or provider state need the confirmation specified above. Record source versions and operation identifiers without exposing credentials.
-
-## Implementation record
-
-Add pinned dependencies, actual component boundaries and operational instructions when the first working slice exists. Document departures from this design with their reason; do not describe planned integrations as verified.
+The public UI and private provider chain are separate. Browser actions do not automatically launch Duo, create MRs, publish source, merge or deploy a preview. The custom flow permits only the requested working-tree candidate; operator promotion and manual CI preserve review boundaries. Keep original inputs, source versions and provider identifiers, and expose failures without substituting a successful local result for provider evidence. See [public release](LIVE_RELEASE.md) and [fixed review workflow](../examples/express-checkout/README.md).

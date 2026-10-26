@@ -6,15 +6,15 @@ Retire a completed boolean flag with a reviewable diff and evidence for the beha
 
 **Live app:** https://flagexit-kc4mxxrtbq-uc.a.run.app
 
-The deployed review workbench performs TypeScript AST analysis, source-bound rollout checks, conservative refusals, before/candidate comparisons on owned fixtures, JSON export and optional browser save/reload/delete. Ten public browser workflows and six deployed HTTP/security checks passed on 24 October 2026 IST. Actual GitLab Duo and MR/CI execution remain separate pending integrations. [Live release evidence](docs/LIVE_RELEASE.md), [verified scope](docs/LOCAL_MILESTONE.md).
+The deployed review workbench performs TypeScript AST analysis, source-bound rollout checks, conservative refusals, before/candidate comparisons on owned fixtures, JSON export and optional browser save/reload/delete. Ten public browser workflows and six deployed HTTP/security checks passed on 24 October 2026 IST. The separate private GitLab workflow has now completed a real Duo review, draft MR and successful candidate CI; see [verified provider evidence](docs/GITLAB_INTEGRATION.md). [Live release evidence](docs/LIVE_RELEASE.md), [verified scope](docs/LOCAL_MILESTONE.md).
 
 ## Intended use
 
 A maintainer nominates a flag and final boolean value. FlagExit checks the supplied source inventory and rollout records, proposes a narrow removal, and shows a diff. Runtime comparisons are restricted to original repository-owned examples; uploaded source is only inspected. Evidence consistency is not proof that a real rollout occurred, and accepted proposals do not authorize a merge.
 
-## Planned workflow
+## Verified review workflow
 
-An issue in a new fixture application names a flag → actual GitLab Duo flow inspects declared configuration and references → selects permitted transformation → opens an MR → pipeline runs before/after behavior checks → preview deployment executes smoke tests → reviewer receives evidence and approves merge. Supervised autonomy is the default; no silent production merge or arbitrary shell command from issue text.
+A nominated express=true checkout fixture passes through actual GitLab Duo review, a scoped working-tree transformation, operator promotion to a draft MR and manual candidate CI. [Pipeline 2988163142](https://gitlab.com/gitlab-ai-hackathon/transcend-october-2026/43478475/flagexitflagexit/-/pipelines/2988163142) passed both the generic verification and the blocking retirement gate on commit `37110d4`. The candidate remains unmerged. The public workbench runs separately; browser proposals do not invoke Duo, open MRs or deploy previews. The actual Duo commands ran on Node 20.20.2; the application release and candidate CI use Node 24.
 
 ## Development
 
@@ -40,7 +40,7 @@ The browser interface can download an inventory template. Each rollout record mu
 
 A [reviewable checkout example](examples/express-checkout/README.md) now turns the proposal into an actual source-file change. The review CLI retains its original baseline, rejects unknown edits, verifies three finite behavior cases and fails an intentionally wrong-value change. The candidate branch has a dedicated manual CI gate; no GitLab execution is inferred from local checks.
 
-`docker build -t flagexit:local-check .` builds the non-root stateless container. The public release is documented above. [GitLab access/next steps](docs/GITLAB_INTEGRATION.md). The prepared manual CI job preserves actual test artifacts; it has not run on GitLab.
+`docker build -t flagexit:local-check .` builds the non-root stateless container. The public release is documented above. [GitLab integration evidence](docs/GITLAB_INTEGRATION.md) records the real session, draft MR, candidate jobs and finite limits.
 
 Keep credentials in local ignored files or the deployment secret store. Do not commit user data, provider tokens or private evaluation records.
 

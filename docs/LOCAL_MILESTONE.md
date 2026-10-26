@@ -1,5 +1,7 @@
 # Local workbench milestone — 21 October 2026
 
+Historical local-only record. Later public deployment and actual Duo/MR/candidate-CI results are documented in [LIVE_RELEASE.md](LIVE_RELEASE.md) and [GITLAB_INTEGRATION.md](GITLAB_INTEGRATION.md). Pending statements below describe this milestone date, not current provider status.
+
 Implemented a TypeScript AST proposal engine, six original scenarios, a CLI, stateless Node HTTP API and responsive browser review interface. Source-bound completed-rollout records are checked for consistency, but their real-world truth is not verified. The engine supports one declared pure boolean flag API in if/ternary conditions, conservatively refusing dynamic/aliased/shadowed uses, unsupported imports, unsafe hoisting, effectful conditions, stale or incomplete evidence. A refusal returns no partial candidate.
 
 Owned fixtures exercise final true, final false and an interacting retained flag across ten finite cases. Actual before/candidate execution matches each retained baseline, and an opposite-value control changes an output in every supported scenario. These are development fixtures, not held-out benchmarks or arbitrary-program equivalence. Submitted code is never executed. Input paths are identifiers only, not filesystem paths.
