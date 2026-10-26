@@ -15,7 +15,7 @@ export function makeServer(publicOrigin=process.env.FLAGEXIT_PUBLIC_ORIGIN??''){
   const url=new URL(req.url??'/','http://localhost');
   if(req.method==='GET'){
    if(assets.has(url.pathname)){const [name,type]=assets.get(url.pathname)!;res.writeHead(200,{'Content-Type':type!});res.end(readFileSync(new URL(name!,web)));return;}
-   if(url.pathname==='/api/health'){json(res,200,{application:'FlagExit',status:'ok',sourceCommit:/^[a-f0-9]{40}$/.test(process.env.SOURCE_COMMIT??'')?process.env.SOURCE_COMMIT:null,integration:{gitlabDuo:'not_verified',pipeline:'not_verified'},persistence:'optional_browser_storage_only'});return;}
+   if(url.pathname==='/api/health'){json(res,200,{application:'FlagExit',status:'ok',sourceCommit:/^[a-f0-9]{40}$/.test(process.env.SOURCE_COMMIT??'')?process.env.SOURCE_COMMIT:null,integration:{scope:'separate_review_workflow',webRequestInvokesDuo:false,gitlabDuo:'verified',sessionId:10031611,pipeline:'verified',pipelineId:2988163142,mergeRequest:1,merged:false},persistence:'optional_browser_storage_only'});return;}
    if(url.pathname==='/api/scenarios'){json(res,200,listOwnedScenarios());return;}
    if(url.pathname==='/api/scenario'){try{json(res,200,getOwnedScenario(url.searchParams.get('id')??''));}catch{json(res,404,{error:'Unknown owned scenario'});}return;}
    json(res,404,{error:'Not found'});return;
